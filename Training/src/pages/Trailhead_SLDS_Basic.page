@@ -1,0 +1,192 @@
+<apex:page standardController="Contact" showHeader="false" standardStylesheets="false" sidebar="false">
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">    
+
+<head>
+<title>Learning Salesforce Lightning System</title>
+<apex:stylesheet value="{!URLFOR($Resource.SLDS100,'assets/styles/salesforce-lightning-design-system-vf.css')}"/>
+<apex:remoteObjects >
+  <apex:remoteObjectModel name="Contact" fields="Id,Name,LastModifiedDate,Email"/>
+</apex:remoteObjects> 
+</head>  
+
+<body>    
+
+  <!-- REQUIRED SLDS WRAPPER -->
+  <div class="slds">    
+
+    <!-- MASTHEAD -->
+    <p class="slds-text-heading--label slds-m-bottom--small">
+      Salesforce Lightning Design System 
+    </p>
+    <!-- / MASTHEAD -->      
+    
+    
+     <!-- PAGE HEADER -->
+        <div class="slds-page-header" role="banner">
+        
+          <!-- LAYOUT GRID -->
+          <div class="slds-grid">
+        
+            <!-- GRID COL -->
+            <div class="slds-col">
+        
+              <!-- HEADING AREA -->
+              <p class="slds-text-heading--label">Contacts</p>
+              <h1 class="slds-text-heading--medium">My Contacts</h1>
+              <!-- /HEADING AREA -->
+        
+            </div>
+        
+            <!-- GRID COL -->
+            <div class="slds-col slds-no-flex slds-align-middle">
+        
+              <div class="slds-button-group" role="group">
+                <button class="slds-button slds-button--neutral">
+                  New Contact
+                </button>
+                <button class="slds-button slds-button--neutral">
+                  More
+                </button>
+              </div>
+        
+            </div>
+            <!-- / GRID COL -->
+        
+          </div>
+          <!-- / LAYOUT GRID -->
+        
+          <p class="slds-text-body--small slds-m-top--x-small">COUNT items</p>
+        
+        </div>
+        <!-- / PAGE HEADER -->    
+       
+    <!-- PRIMARY CONTENT WRAPPER -->
+    <div class="myapp">      
+        
+        <!-- CREATE NEW CONTACT -->
+        <div aria-labelledby="newcontactform">
+
+        <!-- BOXED AREA -->
+        <fieldset class="slds-box slds-theme--default slds-container--small">
+    
+          <legend id="newcontactform" class="slds-text-heading--medium slds-p-vertical--medium">Add a new contact</legend>
+    
+          <!-- CREATE NEW CONTACT FORM -->
+          <form class="slds-form--stacked"> 
+            <div class="slds-form-element">
+              <label class="slds-form-element__label" for="contactName">Name</label>
+              <div class="slds-form-element__control">
+                <input id="contactName" class="slds-input" type="text" placeholder="New contact"/>
+              </div>
+              <label class="slds-form-element__label" for="email">Email</label>
+              <div class="slds-form-element__control">
+                <input id="email" class="slds-input" type="text" placeholder="Email Id"/>
+              </div>
+            </div>
+            <button class="slds-button slds-button--brand slds-m-top--medium" type="button" onClick="createContact()">Create Contact</button>
+          </form>
+          <!-- CREATE NEW CONTACT FORM -->
+    
+        </fieldset>
+        <!-- / BOXED AREA -->
+       </div>
+       <!--  CREATE NEW CONTACT --> 
+       
+       <!-- CONTACT LIST TABLE -->
+          <div id="contactList" class="slds-p-vertical--medium"></div>
+      <!-- / CONTACT LIST TABLE -->  
+
+    </div>
+    <!-- / PRIMARY CONTENT WRAPPER -->     
+
+  </div>
+  <!-- / REQUIRED SLDS WRAPPER -->    
+
+</body>
+
+<!-- JAVASCRIPT -->
+<script>
+  var contact = new SObjectModel.Contact();
+  var outputDiv = document.getElementById("contactList");    
+
+  function updateOutputDiv() {
+
+    contact.retrieve(
+      {orderby: [{LastModifiedDate: 'DESC'}], limit: 10},
+      function(error, records) {
+        if (error) {
+          alert(error.message);
+        } else {
+
+          // create data table
+          var dataTable = document.createElement('table');
+          dataTable.className = 'slds-table slds-table--bordered';
+
+          // add header row
+          var tableHeader = dataTable.createTHead();
+          var tableHeaderRow = tableHeader.insertRow();
+
+          var tableHeaderRowCell1 = tableHeaderRow.insertCell(0);
+          tableHeaderRowCell1.appendChild(document.createTextNode('Contact name'));
+          tableHeaderRowCell1.setAttribute('scope', 'col');
+
+          var tableHeaderRowCell2 = tableHeaderRow.insertCell(1);
+          tableHeaderRowCell2.appendChild(document.createTextNode('Email ID'));
+          tableHeaderRowCell2.setAttribute('scope', 'col');
+
+          // build table body
+          var tableBody = dataTable.appendChild(document.createElement('tbody'))
+          var dataRow, dataRowCell1, dataRowCell2, recordName, recordId;
+          records.forEach(function(record) {
+
+              dataRow = tableBody.insertRow();
+
+              dataRowCell1 = dataRow.insertCell(0);
+              recordName = document.createTextNode(record.get("Name"));
+              dataRowCell1.appendChild(recordName);
+
+              dataRowCell2 = dataRow.insertCell(1);
+              recordId = document.createTextNode(record.get("Email"));
+              dataRowCell2.appendChild(recordId);
+
+          });
+
+          // create data table wrapper
+          var tableWrapper = document.createElement('div');
+          tableWrapper.className = 'slds-scrollable--x';
+          tableWrapper.appendChild(dataTable);
+
+          if (outputDiv.firstChild) {
+            // replace table if it already exists
+            // see later in tutorial
+            outputDiv.replaceChild(tableWrapper, outputDiv.firstChild);
+          } else {
+            outputDiv.appendChild(tableWrapper);
+          }
+        }
+      }
+    );
+  }
+
+    function createContact() {
+      var contactName = document.getElementById("contactName").value;
+      var email = document.getElementById("email").value;
+      var contact = new SObjectModel.Contact();
+      contact.create({LastName: contactName, Email: email}, function(error, records) {
+        if (error) {
+          alert(error.message);
+        } else {
+          updateOutputDiv();
+        }
+      });
+      return false;
+    }
+
+    updateOutputDiv();
+ 
+</script>
+<!-- / JAVASCRIPT -->
+
+</html>
+</apex:page>
