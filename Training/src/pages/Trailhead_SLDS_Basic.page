@@ -168,8 +168,8 @@
       }
     );
   }
-
-    function createContact() {
+	
+	function createContact() {
       var contactName = document.getElementById("contactName").value;
       var email = document.getElementById("email").value;
       var contact = new SObjectModel.Contact();
@@ -182,7 +182,8 @@
       });
       return false;
     }
-
+	
+    
     updateOutputDiv();
  
 </script>
